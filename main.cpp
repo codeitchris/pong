@@ -15,9 +15,37 @@ struct Circles
         Color color;
     };
 
+bool newGamePressed = false;
+bool beginGame = false;
+bool showOpenScreen = true;
 
 
+void button(float x, float y, char *Text, Color color, bool &state){
+    float font = (2.5*GetScreenWidth())/100;
+    Rectangle r1 = {
+        .x =x,
+        .y=y,
+        .width = (float) MeasureText(Text, font),
+        .height = (float) font,
+    };
 
+
+    if(CheckCollisionPointRec(GetMousePosition(), r1)){
+        DrawText(Text, x,y,font,RED);
+        if(IsMouseButtonPressed(0)){
+           if(state == true)
+                state = false;
+            else
+                state = true;
+           
+           return; 
+        }
+    } else {
+        DrawText(Text, x,y,font,color);
+    }
+
+    return;
+}
 
 
 int main() {
@@ -25,7 +53,7 @@ int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(ScreenWidth, ScreenHeight, "begin");
     SetWindowMinSize(MinWindowWidth, MinWindowHeight);
-
+        
 
     int x = GetScreenHeight();
     int y = GetScreenWidth();
@@ -75,8 +103,20 @@ int main() {
 
         DrawCircle(ball.xvar, ball.yvar, ball.radius, ball.color);
 
-        ball.xvar += xballspeed*GetFrameTime();
-        ball.yvar += yballspeed*GetFrameTime();
+        if(showOpenScreen){
+            int font = 2.5*GetScreenWidth()/100;
+            char begin[] = "Begin?";
+            float holder = MeasureText(begin, font)/2;
+            button(GetScreenWidth()/2 - holder, GetScreenHeight()/2, begin, BLACK, beginGame);
+        }
+
+
+        if(beginGame == true){
+            showOpenScreen = false;
+            ball.xvar += xballspeed*GetFrameTime();
+            ball.yvar += yballspeed*GetFrameTime();                
+        }
+        
 
 
         if(ball.xvar >= GetScreenWidth()){
@@ -85,23 +125,45 @@ int main() {
             char ending[] = "Game Over";
             int font = 2.5*GetScreenWidth()/100;
             float correcting = MeasureText(ending, font)/2;
-            DrawText(ending, GetScreenWidth()/2 - correcting, GetScreenHeight()/2, font, BLACK);
+            DrawText(ending, GetScreenWidth()/2 - correcting, 40*GetScreenHeight()/100, font, BLACK);
+
+            char newGame[] = "New Game?";
+            float holder = MeasureText(newGame, font)/2;
+            button(GetScreenWidth()/2 - holder, GetScreenHeight()/2, newGame, BLACK, newGamePressed);
         }
 
         if(ball.xvar <= 0){
-            xballspeed *= -1;
             xballspeed =0;
             yballspeed = 0;
             char ending[] = "Game Over";
             int font = 2.5*GetScreenWidth()/100;
             float correcting = MeasureText(ending, font)/2;
-            DrawText(ending, GetScreenWidth()/2 - correcting, GetScreenHeight()/2, font, BLACK);
+            DrawText(ending, GetScreenWidth()/2 - correcting, 40*GetScreenHeight()/100, font, BLACK);
+
+            char newGame[] = "New Game?";
+            float holder = MeasureText(newGame, font)/2;
+            button(GetScreenWidth()/2 - holder, GetScreenHeight()/2, newGame, BLACK, newGamePressed);
         }
 
+        if(newGamePressed == true){
+            ball.xvar = y/2.0f;
+            ball.yvar =  x/2.0f; 
+            r1.y=.25*(x);
+            r1.x = 20;
+            r2.y=.25*(x);
+            r2.x = ((y-(.02*y))-20);
+            xballspeed = 300;
+            yballspeed = 300; 
+            newGamePressed = false;
+        }
+
+
         if(ball.yvar >= GetScreenHeight()){
+            ball.yvar = GetScreenHeight();
             yballspeed *= -1;
         }
         if(ball.yvar <= 0){
+            ball.yvar = 0;
             yballspeed *= -1;
         }
 
@@ -120,11 +182,15 @@ int main() {
         }
 
         if(CheckCollisionCircleRec({ball.xvar, ball.yvar}, ball.radius, r1)){
-            xballspeed *= -1;
+            xballspeed *= -1.1;
+            rightRecSpeed *=1.3;
+            leftRecSpeed *=1.3;
         }
 
         if(CheckCollisionCircleRec({ball.xvar, ball.yvar}, ball.radius, r2)){
-            xballspeed *= -1;
+            xballspeed *= -1.1;
+            rightRecSpeed *=1.3;
+            leftRecSpeed *=1.3;
         }
         
         

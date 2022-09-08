@@ -1,12 +1,13 @@
 #include <iostream>
 #include "raylib.h"
 
+// Global definitions
 #define ScreenWidth 1000
 #define ScreenHeight 800
 #define MinWindowWidth 500
 #define MinWindowHeight 200
 
-
+//Creating Circles structure
 struct Circles
     {
         float xvar;
@@ -15,11 +16,12 @@ struct Circles
         Color color;
     };
 
+//Boolean definitions
 bool newGamePressed = false;
 bool beginGame = false;
 bool showOpenScreen = true;
 
-
+// Code to make a button
 void button(float x, float y, char *Text, Color color, bool &state){
     float font = (2.5*GetScreenWidth())/100;
     Rectangle r1 = {
@@ -80,7 +82,7 @@ int main() {
         float xballspeed = 300;
         float yballspeed = 300;  
 
-
+//Draws the window
     while(!WindowShouldClose()){
         
         BeginDrawing();
@@ -93,7 +95,7 @@ int main() {
 
         int x = GetScreenHeight();
         int y = GetScreenWidth();
-
+// Creates the rectabgles
         DrawRectangleV (Vector2{(float) r1.x, (float) r1.y},
                         Vector2{(float) r1.width, (float) r1.height}, BLACK);
 
@@ -110,14 +112,14 @@ int main() {
             button(GetScreenWidth()/2 - holder, GetScreenHeight()/2, begin, BLACK, beginGame);
         }
 
-
+// Moves the ball
         if(beginGame == true){
             showOpenScreen = false;
             ball.xvar += xballspeed*GetFrameTime();
             ball.yvar += yballspeed*GetFrameTime();                
         }
         
-
+// Determines if the ball has hit the wall
 
         if(ball.xvar >= GetScreenWidth()){
             xballspeed =0;
@@ -144,7 +146,7 @@ int main() {
             float holder = MeasureText(newGame, font)/2;
             button(GetScreenWidth()/2 - holder, GetScreenHeight()/2, newGame, BLACK, newGamePressed);
         }
-
+// Resets everything if new game pressed
         if(newGamePressed == true){
             ball.xvar = y/2.0f;
             ball.yvar =  x/2.0f; 
@@ -157,7 +159,7 @@ int main() {
             newGamePressed = false;
         }
 
-
+// Reverses direction if it hits the top or bottom wall
         if(ball.yvar >= GetScreenHeight()){
             ball.yvar = GetScreenHeight();
             yballspeed *= -1;
@@ -166,7 +168,7 @@ int main() {
             ball.yvar = 0;
             yballspeed *= -1;
         }
-
+// Code for key commands
         if(IsKeyDown(KEY_E) && r1.y > 0){
             r1.y -= rightRecSpeed*GetFrameTime();
         }
